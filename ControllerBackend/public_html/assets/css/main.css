@@ -1,0 +1,193 @@
+.clearfix {
+	clear: both;
+}
+
+#device-list, #room-list {
+	margin: 5px;
+	padding: 0;
+}
+
+#device-list img {
+	padding-left: 5px;
+}
+
+/* :Red Buttonhttp://192.168.1.51/ruless */
+ ul.ui-nodisc-icon .onSwitch:after {
+    background-color: #e60000;
+}
+
+/* :Green Buttons */
+ ul.ui-nodisc-icon .offSwitch:after {
+    background-color: #00e600;
+}
+
+.ui-content
+{
+    margin-bottom: 60px; /* The height of the footer */
+}
+
+/* Get rid of blue border on clicking power buttons */
+.ui-btn:active, .ui-btn:focus {
+ -moz-box-shadow: none !important;
+ -webkit-box-shadow: none !important;
+ box-shadow: none !important;
+}
+
+.ui-header .ui-title {
+    font-size: 20px;
+    font-weight:bold;
+}
+
+.ui-header .ui-btn{
+	top: 12px;
+}
+
+.logo-img{
+	text-align: center;
+	margin: 0 auto;
+}
+
+form ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+  label {
+  	/*width: 100%;*/
+    display: inline-block;
+/*    width: 5em;*/
+  }
+
+form input {
+	width: 100%;
+}
+
+/* Hide the number input */
+.full-width-slider input {
+    /*display: none;*/
+}
+.full-width-slider .ui-slider-track {
+    margin-left: 15px;
+}
+
+/* Temperature Display */
+.climate-control {
+	width: 250px;
+	height: 250px;
+	border-radius: 100%;
+	border: 10px solid black;
+	padding: 5px;
+	margin: auto;
+	margin-top: 10px;
+	text-align: center;
+	
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f0f9ff+0,cbebff+47,a1dbff+100;Blue+3D+%2313 */
+	background: rgb(240,249,255); /* Old browsers */
+	background: -moz-radial-gradient(center, ellipse cover, rgba(240,249,255,1) 0%, rgba(203,235,255,1) 47%, rgba(161,219,255,1) 100%); /* FF3.6-15 */
+	background: -webkit-radial-gradient(center, ellipse cover, rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: radial-gradient(ellipse at center, rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+.climate-control form {
+	width: 80%;
+	margin: auto;
+}
+
+/* Remote Control Display */
+.container { width: 320px; margin-top: 20px; padding: 10px; background-color: #e5e5e5; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; }
+.vol { display: block; text-align: center; margin-top: 20px; margin-bottom: 0px; }
+.row-top { margin-bottom: 20px !important; }
+.arr { width: 47px; margin-left: 43px; margin-top: 5px; margin-bottom: 5px; }
+.row { margin-left: 0px; margin-bottom: 5px; overflow: hidden; }
+.row-big { margin-left: 0px; margin-bottom: 25px; overflow: hidden; }
+.grid3 { width: 97px; }
+.grid4 { width: 72px; }
+.grid1 { width: 40px; float: left; }
+.grid2 { width: 144px; float: left; }
+.js-ip-config { margin-top: 10px; }
+#arrows { width:135px; float: left; margin-right: 15px; margin-left: 15px; }
+.nums {
+	width: 100%;
+	margin-top: 10px;
+	margin-left: 2px;
+}
+.num {
+	width: 97px;
+	height: 40px;
+}
+
+@media (max-width: 767px) {
+    .container {
+        margin-top: 0px;
+    }
+}
+
+
+.ui-li-aside 
+{
+    font-weight:bold !important;
+    font-size:x-large !important;
+    position: absolute !important;
+    right: 5px !important;
+}
+
+.fa {
+	color: red;
+}
+
+.btn-device-tooltip {
+	float: right;
+}
+
+
+/* CSS3 AJAX Loader */
+/* Courtesy of http://tobiasahlin.com/spinkit/ */
+.spinner {
+	position: absolute;
+	top: 45%;
+	left: 45%;
+	z-index: 1000;
+	visibility: hidden;
+	float: left;
+	/*margin: 1px auto 0;*/
+	width: 70px;
+	text-align: center;
+}
+
+.spinner > div {
+	opacity: 0.9;
+	width: 18px;
+	height: 18px;
+	background-color: #333;
+
+	border-radius: 100%;
+	display: inline-block;
+	-webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+	animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+	-webkit-animation-delay: -0.32s;
+	animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% { 
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 40% { 
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}

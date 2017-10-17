@@ -1,0 +1,250 @@
+$(document).on('vclick', '.btn-menu', function(e){
+    // e.preventDefault();
+    // var location = $(this).attr('href');
+    // console.log(location);
+    // $.mobile.changePage(location, {
+    //     // data: {
+    //     //     id: this.id
+    //     // }
+    // });
+    e.preventDefault();
+  // Append #bar
+  $.mobile.navigate( $(this).attr("href"), {
+    dataID: $(this).attr("data-id"),
+    someother: "hi"
+  });
+
+  // Replace #bar with #baz
+  $.mobile.navigate( "#baz" );
+
+  // Log the results of the navigate event
+  $( window ).on( "navigate", function( event, data ){
+    console.log( data.state.info );
+    console.log( data.state.direction );
+    console.log( data.state.url );
+    console.log( data.state.hash );
+  });
+
+  // Go back to pop the state for #bar and log it
+  window.history.back();
+    // alert("hey");
+    // var location = $(this).attr('href');
+    // alert(location);
+});
+
+$(document).on("pageinit", '#climatePage' ,function(data){
+    $( "#temp-slider" ).bind( "change", function(event, ui) {
+        $('#set-temp').text($(this).val()+String.fromCharCode(8451));
+    });
+});
+
+$(document).on("pageinit", '#roomsPage' ,function(data){
+    $.mobile.loading( 'show', {});
+    // alert("pageinit event fired!\nID: " + data.target.id);
+    // console.log(data.target.id);
+    $('#room-list').empty();
+    
+    $.get( "api/rooms", function(data) {
+        // Iterate over the response array
+        $.each(data, function(i, row) {
+            var roomRow = `
+                <li>
+                    <a href="/device" data-id="4" >
+                        <img src="/assets/img/icons/lamp.png" class="device-list-img" alt="Icon">
+                        <h2>${row.name}</h2>
+                        <p>Devices: ${row.DeviceCount}</p>
+                    </a>
+                </li>
+            `;
+            $('#room-list').append(roomRow);
+        });
+
+        console.log(data);
+    })
+
+    .always(function() {
+        // Refresh the ListView
+        $('#room-list').listview('refresh');
+    });
+});
+
+$(document).on('pageinit', '#devicesPage', function(){
+    $.mobile.loading( 'show', {});
+    $('#device-list').empty();
+    var url = '/api/devices';
+
+    $.ajax({
+        url: url,
+        dataType: "json",
+        async: true,
+        success: function (result) {
+            // Empty the device list
+            $('#device-list').append('<li data-role="list-divider">Lighting<span class="ui-li-count">3</span></li>');
+
+            // Iterate over the response array
+            $.each(result, function(i, row) {
+                // console.log(JSON.stringify(row));
+                // console.log(row);
+                var switchClass = (row.relay_state == 0 ? "onSwitch" : "offSwitch");
+                var switchAction = (row.relay_state == 0 ? 1 : 0);
+                var deviceRow = `
+                    <li>
+                        <div class="spinner">
+                            <div class="bounce1"></div>
+                            <div class="bounce2"></div>
+                            <div class="bounce3"></div>
+                        </div>
+                        <a href="#device-info-dialog" data-rel="popup" data-position-to="window" data-transition="pop" data-id="${row.id}" >
+                            <img src="/assets/img/${row.path}" class="device-icon" alt="Icon">
+                            <h2>${row.name}</h2><p>${row.ip}</p>
+                        </a>
+                        <a href="#" class="device-power-btn ${switchClass}" id="dsw-${row.id}" data-id="${row.id}" data-action="${switchAction}">Power</a>
+                    </li>
+                `;
+                $('#device-list').append(deviceRow);
+            });
+
+            // Refresh the listview
+            $('#device-list').listview('refresh');
+            $.mobile.loading( 'hide', {});           
+        },
+        error: function (request,error) {
+            alert('Could not connect to IoT API!');
+            $.mobile.loading( 'hide', {});
+        }
+    });         
+});
+
+$(document).on('pagebeforeshow', '#headline', function(){      
+    $('#movie-data').empty();
+    $.each(movieInfo.result, function(i, row) {
+        if(row.id == movieInfo.id) {
+            $('#movie-data').append('<li><img src="http://image.tmdb.org/t/p/w92'+row.poster_path+'"></li>');
+            $('#movie-data').append('<li>Title: '+row.original_title+'</li>');
+            $('#movie-data').append('<li>Release date'+row.release_date+'</li>');
+            $('#movie-data').append('<li>Popularity : '+row.popularity+'</li>');   
+            $('#movie-data').append('<li>Popularity : '+row.vote_average+'</li>');             
+            $('#movie-data').listview('refresh');            
+        }
+    });    
+});
+
+$(document).on('vclick', '.device-power-btn', function(e){
+    // Check if the anchor button is enabled
+    if (!$(this).data('disabled')){
+        // Disable the anchor button
+        $(this).data('disabled',true);
+
+        // Prevent default event triggering
+        e.preventDefault();
+
+        // Show the loading spinner
+        $(this).parent().children(".spinner").css("visibility", "visible");
+
+        var deviceID = $(this).attr("data-id");
+        var action = $(this).attr("data-action");
+        var device_commands = {power:{state: action}};
+        var command = {id:deviceID, device_commands};
+
+        $.post("/api/device/id/"+deviceID, { "device": command }, function( data, status, xhr ) {
+            //success
+            if(!data.response.error){
+                if(data.command.device_commands.power.state == 0){
+                    $("#dsw-"+data.command.id).removeClass( "offSwitch" ).addClass( "onSwitch" );
+                    $("#dsw-"+data.command.id).attr( "data-action", 1 );
+                }else{
+                    $("#dsw-"+data.command.id).removeClass( "onSwitch" ).addClass( "offSwitch" );
+                    $("#dsw-"+data.command.id).attr( "data-action", 0 );
+                }
+            }else{
+                toast("Device Error");
+            }
+        })
+
+        .always(function(data) {
+            // Re-enable the anchor button after AJAX post complete
+            $("#dsw-"+data.command.id).data('disabled',false);
+
+            // Hide the loading spinner
+            $("#dsw-"+data.command.id).parent().children(".spinner").css("visibility", "hidden");
+        });
+
+    } // end anchor button check
+});
+
+$(document).on('vclick', '#btn-login', function(event){
+    var loginForm =
+        '<ul>' +
+            '<li><label for="txt-user">Username</label><input type="text" name="txt-user" id="txt-user" placeholder="Enter username..."/></li>' +
+            '<li><label for="txt-pass">Password</label><input type="password" name="txt-pass" id="txt-pass" placeholder="Enter password..."/></li>' +
+            '<fieldset data-role="controlgroup" data-iconpos="right">' +
+                '<input name="chk-remember" id="chk-remember" type="checkbox" />' +
+                '<label for="chk-remember">Remember Me</label>' +
+            '</fieldset>' +
+            '<a href="#" id="btn-login-submit" class="ui-btn ui-btn-b ui-corner-all">Login</a>' +
+        '</ul>';
+    $('#login').empty();
+    $( loginForm ).appendTo( "#login" ).enhanceWithin();
+});
+
+$(document).on('vclick', '#btn-login-submit', function(){
+    $.mobile.loading( 'show', {});
+    var username = $('#txt-user').val();
+    var password = $('#txt-pass').val();
+    var jqxhr = $.post( "api/login", {user: username, pass: password}, function(data) {
+        if(data.status === 'success'){
+            document.location.href = '/'
+        }else{
+            toast("Invalid Credentials");
+        }
+    })
+
+    .fail(function() {
+        // alert( "error" );
+        toast("error logging in");
+    })
+
+    .always(function() {
+        // alert( "finished" );
+        $.mobile.loading( 'hide', {});
+    });
+});
+
+$(document).on('vclick', '#btn-logout', function(){
+    var jqxhr = $.get( "api/logout", function(data) {
+        // alert( "success" );
+        document.location.href = '/';
+    })
+
+    .always(function() {
+        // alert( "finished" );
+    });
+});
+
+
+
+
+function toast(message) {
+    var $toast = $('<div class="ui-loader ui-overlay-shadow ui-body-e ui-corner-all"><h3>' + message + '</h3></div>');
+
+    $toast.css({
+        display: 'block', 
+        background: '#fff',
+        opacity: 0.90, 
+        position: 'fixed',
+        padding: '7px',
+        'text-align': 'center',
+        width: '270px',
+        left: ($(window).width() - 284) / 2,
+        top: $(window).height() / 2 - 20
+    });
+
+    var removeToast = function(){
+        $(this).remove();
+    };
+
+    $toast.click(removeToast);
+
+    $toast.appendTo($.mobile.pageContainer).delay(2000);
+    $toast.fadeOut(400, removeToast);
+}
